@@ -31,7 +31,7 @@ background_offset = 0
 
 # Define dialogue text and font
 dialogue_font = pygame.font.Font(None, 50)
-dialogue_text = ["Dialogue Line 1", "Dialogue Line 2", "Dialogue Line 3", "Dialogue Line 4", "Dialogue Line 5"]
+dialogue_text = ["OUJEDIPRODUCTIONS", "Brandon Morrow", "Alfonso Fasano", "Kevin Ramirez", "Alex Merlo", "Jacque Miller"]
 dialogue_y = HEIGHT
 
 # Main game loop
