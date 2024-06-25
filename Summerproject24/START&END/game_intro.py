@@ -24,11 +24,11 @@ brightness_button = load_image("brightness_button.png")
 dim_button = load_image("dim_button.png")  # Load the dim button image
 
 # Set scaling factors for images
-logo_reduction_factor = 0.04
+logo_reduction_factor = .80
 scaled_logo_width = int(game_logo.get_width() * logo_reduction_factor)
 scaled_logo_height = int(game_logo.get_height() * logo_reduction_factor)
 logo_x = (WIDTH - scaled_logo_width) // 2
-logo_y = 20
+logo_y = -100
 
 button_reduction_factor = 0.4
 scaled_start_button_width = int(start_button.get_width() * button_reduction_factor)
@@ -36,8 +36,8 @@ scaled_start_button_height = int(start_button.get_height() * button_reduction_fa
 scaled_options_button_width = int(options_button.get_width() * button_reduction_factor)
 scaled_options_button_height = int(options_button.get_height() * button_reduction_factor)
 
-button_x_start = (WIDTH - (scaled_start_button_width + scaled_options_button_width + 45.5)) // 1
-button_y = HEIGHT - scaled_start_button_height - 175
+button_x_start = (WIDTH - (scaled_start_button_width + scaled_options_button_width + 100)) 
+button_y = HEIGHT - scaled_start_button_height - 120
 
 scaled_options_button_width *= 0.3
 scaled_options_button_height *= 0.3
@@ -50,18 +50,18 @@ scaled_back_button_height = int(back_button.get_height() * back_button_reduction
 button_x_back = 5
 button_y_back = HEIGHT - scaled_back_button_height - 5
 
-brightness_button_reduction_factor = 0.2
+brightness_button_reduction_factor = 0.34
 scaled_brightness_button_width = int(brightness_button.get_width() * brightness_button_reduction_factor)
 scaled_brightness_button_height = int(brightness_button.get_height() * brightness_button_reduction_factor)
 
-dim_button_reduction_factor = 0.12
+dim_button_reduction_factor = 0.34
 scaled_dim_button_width = int(dim_button.get_width() * dim_button_reduction_factor)
 scaled_dim_button_height = int(dim_button.get_height() * dim_button_reduction_factor)
 
 # Center the brightness and dim buttons side by side
-button_x_brightness = (WIDTH - scaled_brightness_button_width - scaled_dim_button_width - 10) // 2
-button_x_dim = button_x_brightness + scaled_brightness_button_width + 10
-button_y_brightness = HEIGHT - scaled_brightness_button_height - 200
+button_x_brightness = (WIDTH - scaled_brightness_button_width - scaled_dim_button_width - 220) 
+button_x_dim = button_x_brightness + scaled_brightness_button_width + 2
+button_y_brightness = HEIGHT - scaled_brightness_button_height - 190
 button_y_dim = button_y_brightness
 
 base_scroll_speed = 0.5
@@ -77,6 +77,13 @@ background_offset = 0
 second_page_active = False
 brightness_level = 1.0  # Initialize brightness level
 
+# Variables for start button animation
+start_button_expanding = True
+start_button_scale_factor = 1.0
+start_button_max_scale = 1.1
+start_button_min_scale = 0.9
+start_button_scale_speed = 0.004
+
 # Function to adjust brightness
 def apply_brightness(surface, level):
     # Create a brightness surface
@@ -86,7 +93,7 @@ def apply_brightness(surface, level):
 
 # Define a function for the logo on the second page
 def draw_second_page_logo():
-    logo_path = 'your_logo.png'  # Replace with your own logo path
+    logo_path = 'your_logo.png'  
     logo_image = load_image(logo_path)
     logo_reduction_factor = 0.7
     scaled_logo_width = int(logo_image.get_width() * logo_reduction_factor)
@@ -141,13 +148,30 @@ while running:
     screen.blit(background_surface, (0, 0))
 
     if not second_page_active:
+        # Handle start button hover effect
+        mouse_pos = pygame.mouse.get_pos()
+        if button_x_start <= mouse_pos[0] <= button_x_start + int(scaled_start_button_width * start_button_scale_factor) and button_y <= mouse_pos[1] <= button_y + int(scaled_start_button_height * start_button_scale_factor):
+            start_button_scale_factor = 1.0  # Reset scale factor when hovered
+        else:
+            if start_button_expanding:
+                start_button_scale_factor += start_button_scale_speed
+                if start_button_scale_factor >= start_button_max_scale:
+                    start_button_expanding = False
+            else:
+                start_button_scale_factor -= start_button_scale_speed
+                if start_button_scale_factor <= start_button_min_scale:
+                    start_button_expanding = True
+
+        scaled_start_button_width_dynamic = int(scaled_start_button_width * start_button_scale_factor)
+        scaled_start_button_height_dynamic = int(scaled_start_button_height * start_button_scale_factor)
+
         screen.blit(pygame.transform.scale(game_logo, (scaled_logo_width, scaled_logo_height)), (logo_x, logo_y))
-        screen.blit(pygame.transform.scale(start_button, (scaled_start_button_width, scaled_start_button_height)), (button_x_start, button_y))
+        screen.blit(pygame.transform.scale(start_button, (scaled_start_button_width_dynamic, scaled_start_button_height_dynamic)), (button_x_start, button_y))
         screen.blit(pygame.transform.scale(options_button, (scaled_options_button_width, scaled_options_button_height)), (button_x_options, button_y_options))
     else:
         draw_second_page_logo()
 
-    apply_brightness(screen, brightness_level)  # Apply brightness level
+    apply_brightness(screen, brightness_level)  
 
     pygame.display.flip()
 
